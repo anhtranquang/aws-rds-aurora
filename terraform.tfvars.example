@@ -1,0 +1,44 @@
+aws_region         = "ap-southeast-1"
+master_prefix      = "dev"
+vpc_id             = "vpc-00aadbd61d1d65a25"
+subnet_tag         = "data-*"
+
+cluster_identifier   = "portgresql"
+engine               = "aurora-postgresql"
+engine_version       = "13.5"
+cluster_family       = "aurora-postgresql13"
+master_username      = "admin"
+instances = {
+  1 = {
+    identifier     = "static-member-1"
+    instance_class      = "db.r5.large"
+    publicly_accessible = false
+  }
+  2 = {
+    identifier     = "static-member-2"
+    instance_class = "db.r5.large"
+    publicly_accessible = false
+  }
+}
+
+endpoints = {
+  static = {
+    identifier     = "static-custom-endpt"
+    type           = "ANY"
+    static_members = ["static-member-1"]
+    tags           = { Endpoint = "static-members" }
+  }
+  excluded = {
+    identifier       = "excluded-custom-endpt"
+    type             = "READER"
+    excluded_members = ["static-member-2"]
+    tags             = { Endpoint = "excluded-members" }
+  }
+}
+
+iam_database_authentication_enabled = true
+
+apply_immediately   = true
+skip_final_snapshot = true
+
+#enabled_cloudwatch_logs_exports = ["postgresql"]
